@@ -1,0 +1,7 @@
+power_price:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /usr/app/data/ptf.duckdb
+      threads: 1
