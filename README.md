@@ -14,7 +14,7 @@ Bu projede verideki örüntüleri keşfederek önümüzdeki 7 gün için saatlik
 
 Modelin başarısını üç senaryoyu karşılaştırarak ölçeceğiz:
 
-- **Sabit plan:** Soğutma bloğu her gün aynı 6 saatte çalıştırılıyor. Diyelim ki maliyeti 100 €.
+- **Sabit plan:** Soğutma bloğu her gün, ortalamada en ucuz saatler olan 10:00–16:00 arasında çalıştırılıyor. Modelin, bu akıllı ama sabit kuralı geçmesi gerekiyor. Diyelim ki maliyeti 100 €.
 - **Kusursuz bilgi:** Geleceği bilseydik en ucuz saatlerle ödeyeceğimiz tutar. Diyelim ki 60 €; daha ucuzu mümkün değil.
 - **Model:** Tahminlere göre seçtiğimiz saatlerle ödediğimiz tutar. Diyelim ki 70 €.
 

@@ -3,12 +3,13 @@ import duckdb
 conn = duckdb.connect("data/ptf.duckdb", read_only=True)
 
 print(conn.execute("""
-    SELECT * FROM stg_prices ORDER BY ts_utc LIMIT 5
+    SELECT * FROM fct_prices_hourly ORDER BY ts_utc LIMIT 5
 """).df())
 
 print(conn.execute("""
-    SELECT n_intervals, COUNT(*) AS saat_sayisi
-    FROM stg_prices
+    SELECT hour_berlin,
+           ROUND(AVG(price_eur_mwh), 1) AS ort_fiyat
+    FROM fct_prices_hourly
     GROUP BY 1
     ORDER BY 1
 """).df())
