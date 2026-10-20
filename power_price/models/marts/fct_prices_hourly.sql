@@ -1,18 +1,30 @@
-WITH base_extracted_features AS(
+WITH base_extracted_features AS (
     SELECT
         ts_utc,
         ts_berlin,
         price_eur_mwh,
-        CAST(ts_berlin AS DATE) AS date_berlin, -- Sütun tipi TIMESTAMP (zaman damgası - saatli tarih) olduğundan ve biz sadece gün/ay/yıl kısmını almak istediğimizden dolayı CAST fonksiyonu ile tarih formatındaki veriden sadece gün-ay-yıl kısmını çekiyoruz.
-        HOUR(ts_berlin) AS hour_berlin, -- İlgili tarihin sadece SAAT kısmını almamızı sağlar.
-        ISODOW(ts_berlin) AS day_of_week, -- Haftanın hangi gününde olduğumuzu Pazartesi=1, Pazar=7 olacak şekilde uluslararası standartta (ISO) sayısal olarak almak istiyoruz. Bunun için duckdb'de isodow fonksiyonunu kullanabiliriz.
-        MONTH(ts_berlin) AS month -- Ay bilgisini sayısal olarak çekmek için MONTH fonksiyonu kullanılır. Örn: Kasım > 11, Ocak > 1 ..
-        FROM {{ref('stg_prices')}}
+        CAST(ts_berlin AS DATE) AS date_berlin, -- Sütun tipi TIMESTAMP olduğundan sadece gün/ay/yıl kısmını almak için CAST kullanıyoruz.
+        HOUR(ts_berlin) AS hour_berlin, -- İlgili tarihin sadece SAAT kısmını alır.
+        ISODOW(ts_berlin) AS day_of_week, -- Pazartesi=1, Pazar=7 olacak şekilde haftanın gününü sayısal olarak alır.
+        MONTH(ts_berlin) AS month -- Ay bilgisini sayısal olarak çekmek için kullanılır.
+    FROM {{ref('stg_prices')}}
+), -- <--- İki CTE arasına virgül konur.
+
+calculated_weekend_features AS (
+    SELECT 
+        *,
+        CASE
+            WHEN day_of_week IN (6, 7) THEN true
+            ELSE false
+        END AS is_weekend
+    FROM base_extracted_features
 )
+
 SELECT 
-*,
-CASE
-    WHEN day_of_week IN (6,7) THEN true
-    ELSE false
-END AS is_weekend
-FROM base_extracted_features
+    cwf.*,
+    (hd.holiday_date IS NOT NULL) AS is_holiday,
+    cwf.is_weekend OR (hd.holiday_date IS NOT NULL) AS is_day_off
+FROM calculated_weekend_features cwf
+LEFT JOIN {{ref('holidays_de')}} hd
+ON cwf.date_berlin = hd.holiday_date
+
