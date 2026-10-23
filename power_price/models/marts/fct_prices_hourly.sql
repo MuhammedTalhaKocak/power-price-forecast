@@ -1,3 +1,6 @@
+{{config(
+    post_hook = "COPY {{this}} TO '/usr/app/data/fct_prices_hourly.parquet' (FORMAT PARQUET)"
+)}}
 WITH base_extracted_features AS (
     SELECT
         ts_utc,
