@@ -1,3 +1,6 @@
+{{config(
+    post_hook = "COPY {{this}} TO '/usr/app/data/fct_daily_block_costs.parquet' (FORMAT PARQUET)"
+)}}
 WITH windows AS (
     SELECT
         date_berlin,

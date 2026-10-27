@@ -3,7 +3,8 @@ import duckdb
 conn = duckdb.connect("data/ptf.duckdb", read_only=True)
 
 print(conn.execute("""
-    SELECT * FROM fct_daily_block_costs ORDER BY date_berlin LIMIT 5
+    SELECT COUNT(*) AS gun, MIN(date_berlin), MAX(date_berlin)
+    FROM 'data/fct_daily_block_costs.parquet'
 """).df())
 
 conn.close()
