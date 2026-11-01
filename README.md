@@ -28,3 +28,18 @@ Yakalama oranı asıl metriğimiz; "mükemmel bir tahminin sağlayacağı faydan
 ## Veri
 
 Veriler, Fraunhofer ISE'nin [Energy-Charts API](https://api.energy-charts.info/)'sinden Almanya-Lüksemburg (DE-LU) teklif bölgesi için day-ahead elektrik fiyatları olarak çekiliyor (EUR/MWh). Veri Ocak 2024'ten başlıyor; Eylül 2025'e kadar saatlik, Ekim 2025'ten itibaren Avrupa piyasasının geçişiyle birlikte 15 dakikalık çözünürlükte. Tutarlılık için tüm seri dbt'de saatlik ortalamaya dönüştürülüyor.
+
+
+## Baseline Sonuçları (test: son 365 gün)
+- Seasonal naive (geçen haftanın aynı saati): MAE 38,5 €/MWh, yakalama oranı %62,6
+- 10–16 kuralı: yakalama oranı %0 (tanım gereği)
+- Asıl rakip seasonal naive: model hem MAE'de hem yakalama oranında onu geçmeli.
+
+## Model v1 Sonucu (test: son 365 gün)
+- HistGradientBoostingRegressor; feature'lar: hour_berlin, day_of_week, month, is_day_off, naive_pred
+- MAE 38,3 €/MWh (naive 38,5), yakalama oranı %68,3 (naive %62,6)
+- Fiyat doğruluğu neredeyse aynı, ama saatlerin sıralaması daha iyi → karar kalitesi arttı.
+- Not: Tek train/test bölmesi, model yıl içinde yeniden eğitilmedi.
+
+## Sıradaki Adım
+Model v1'i geliştirmek: haftalık yeniden eğitim (rolling-origin backtest), mevsime göre sonuçlar, ardından Model v2 (hava tahminleri).
